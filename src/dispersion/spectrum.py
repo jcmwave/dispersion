@@ -91,6 +91,8 @@ def wavelength_to_standard(unit, values):
         converted_values = values*1e-9
     elif unit == 'um':
         converted_values = values*1e-6
+    elif unit =='a':
+        converted_values = values*1e-10
     else:
         converted_values = values
     return converted_values
@@ -103,6 +105,8 @@ def to_wavelength(unit, values):
         converted_values = np.round(values*1e9, decimals=12)
     elif unit == 'um':
         converted_values = np.round(values*1e6, decimals=9)
+    elif unit == 'a':
+        converted_values = np.round(values*1e10, decimals=13)
     return converted_values
 
 def to_frequency(unit, values):
@@ -143,7 +147,7 @@ class Spectrum(object):
     when defining spectral quantities
     '''
 
-    SPECTRUM_TYPES = {'wavelength': {'m', 'um', 'nm'},
+    SPECTRUM_TYPES = {'wavelength': {'m', 'um', 'nm', 'a'},
                       'frequency': {'hz'},
                       'energy': {'ev'},
                       'angularfrequency': {'1/s'},
@@ -155,15 +159,17 @@ class Spectrum(object):
                   'hz': {'hertz', 'hz'},
                   'ev': {'electronvolt', 'ev'},
                   '1/s': {'1/s', 'rad/s'},
-                  '1/cm': {'1/cm'}}
+                  '1/cm': {'1/cm'},
+                  'a': {'angstrom'}}
 
     DISPLAY_NAMES = {'m': 'm',
-                     'um': 'um',
+                     'um': u'μm',
                      'nm': 'nm',
                      'hz': 'Hz',
                      'ev': 'eV',
                      '1/s': '1/s',
-                     '1/cm': '1/cm'}
+                     '1/cm': '1/cm',
+                     'a':u'Å'}
 
     def __init__(self, values, spectrum_type='wavelength', unit='m'):
         self.spectrum_type = spectrum_type.lower()
