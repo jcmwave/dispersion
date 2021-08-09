@@ -160,7 +160,7 @@ class Spectrum(object):
                   'ev': {'electronvolt', 'ev'},
                   '1/s': {'1/s', 'rad/s'},
                   '1/cm': {'1/cm'},
-                  'a': {'angstrom'}}
+                  'a': {'a', 'angstrom'}}
 
     DISPLAY_NAMES = {'m': 'm',
                      'um': u'μm',
