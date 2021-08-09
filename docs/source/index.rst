@@ -32,7 +32,7 @@ now we need to tell the package where you are going to store the material data
 files. To do this we run the script that comes with the package
 ::
 
-  > setup_dispersion
+  > dispersion_setup
 
 This script will ask you to type in the path to a folder where the database
 file structure will be installed. Secondly, you will be asked to
