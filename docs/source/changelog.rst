@@ -1,5 +1,20 @@
 Change Log
 ==========
+- 1.0.0
+
+  - first full release.
+
+  - added config option to supress YAML package warnings.
+
+  - fixed incorrect name of the setup script in the documentation.
+
+  - added angstrom as a valid unit for wavelength spectrums.
+
+  - added support for loading .nk files.
+
+  - .txt and .csv files can now have colons in their metadata.
+
+  - updated PyYAML dependency to v5.4
 
 - 0.1.0.beta5
 
