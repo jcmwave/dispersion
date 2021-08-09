@@ -30,7 +30,6 @@ Writer
 import os
 import sys
 import codecs
-import warnings
 import re
 from collections import OrderedDict
 import numpy as np
@@ -40,9 +39,6 @@ try:
     from ruamel.yaml import scalarstring
     from ruamel.yaml.comments import CommentedMap
 except ModuleNotFoundError as exc:
-    warnings.warn("preferred yaml package ruamel.yaml not installed, falling" +
-                  " back to PyYAML, writing yaml files may give inconsistent" +
-                  " round trip results")
     USE_RUAMEL = False
     import yaml
 #from dispersion.material import _str_table_to_numeric

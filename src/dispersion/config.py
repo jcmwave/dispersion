@@ -26,6 +26,7 @@ def validate_config(config):
         raise IOError("directory path for database file system is invalid:" +
                       " <{}>".format(config['Path']))
     check_type(config['Interactive'],bool)
+    check_type(config['WarnMissingPackages'],bool)
     assert "Modules" in config
     for value in config['Modules'].values():
         check_type(value,bool)
@@ -57,6 +58,7 @@ def default_config():
     Path: {}
     File: catalogue.csv
     Interactive: false #for jupyter interfactive editing
+    WarnMissingPackages: False # raise warnings if non-essential packages are missing
     Modules: # which databases to include
       UserData: true
       RefractiveIndexInfo: true
