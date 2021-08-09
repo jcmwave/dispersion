@@ -286,7 +286,7 @@ class Reader():
         dict
             the data from the material file
         """
-        txt_types = {'.txt', '.csv'}
+        txt_types = {'.txt', '.csv', '.nk'}
         if self.extension in txt_types:
             return self._read_text_file()
         elif self.extension == '.yml':
@@ -297,7 +297,7 @@ class Reader():
                              ", supported extensions are (.yml|.csv|.txt)")
 
     def _read_text_data(self):
-        """read data stored in a .txt or .csv file."""
+        """read data stored in a .txt, .csv or .nk file."""
         fname, ext = os.path.splitext(self.file_path)
         try:
             if ext == '.txt':
@@ -313,6 +313,13 @@ class Reader():
                 except TypeError:
                     with open(self.file_path, encoding = 'utf-8') as fpt:
                         data = np.loadtxt(fpt,delimiter=',')
+            elif ext == '.nk':
+                try:
+                    data = np.loadtxt(self.file_path, encoding='utf-8',
+                                      comments=';')
+                except TypeError:
+                    with open(self.file_path, encoding = 'utf-8') as fpt:
+                        data = np.loadtxt(fpt, comments=';')
         except IOError as exc:
             raise exc
         data_dict = self._create_default_data_dict()
@@ -326,7 +333,7 @@ class Reader():
         comment = []
         with codecs.open(self.file_path, 'r', 'utf-8') as fpt:
             for line in fpt:
-                if line[0] == "#":
+                if line[0] == "#" or line[0] == ';':
                     comment.append(line[1:].rstrip("\n\r"))
                 else:
                     return comment
@@ -334,9 +341,9 @@ class Reader():
 
     def _read_text_file(self):
         """
-        text files (.txt,.csv) may only contain tabulated nk data
+        text files (.txt,.csv,.nk) may only contain tabulated nk data
         plus metadata. Metadata should be at the beginning of the
-        file, one item per line. The line must start with '#' to
+        file, one item per line. The line must start with '#' or ';' to
         denote metadata. Metadata is written in the key:value
         structure.
         """
@@ -348,32 +355,34 @@ class Reader():
         multi_line_comment = ""
         for line in comment:
             kwd_arg = line.split(":")
+            kwd = kwd_arg[0].upper().lstrip()
             if len(kwd_arg) == 1:
                 multi_line_comment += line + "\n"
-            elif len(kwd_arg) == 2:
-                kwd = kwd_arg[0].upper().lstrip()
-                arg = kwd_arg[1].rstrip("\n\r").lstrip()
-                valid = False
+            else:
+                arg = ":".join(kwd_arg[1:]).rstrip("\n\r").lstrip()
+                #arg = kwd_arg[1].rstrip("\n\r").lstrip()
+                valid_key_val = False
                 for key in Reader.FILE_META_DATA_KEYS:
                     if kwd.startswith(key.upper()):
                         if key == 'Specification':
                             file_dict['MetaData'][key] = str(arg)
                         else:
                             file_dict['MetaData'][key] = arg
-                        valid = True
+                        valid_key_val = True
                         break
-                if valid is False:
+                if valid_key_val is False:
                     for key in Reader.DATASET_META_DATA_KEYS:
                         if kwd.startswith(key.upper()):
                             file_dict['Datasets'][0][key] = arg
-                            valid = True
+                            valid_key_val = True
                             break
-                if valid is False:
-                    KeyError("keyword " +
-                             "[{}] in comment header invalid".format(kwd))
-            else:
-                raise RuntimeError(" string \":\" may only appear" +
-                                   "once per line in comment header")
+                #if valid_key_val is False:
+                #    KeyError("keyword " +
+                #             "[{}] in comment header invalid".format(kwd))
+                #else:
+                if valid_key_val is False:
+                    multi_line_comment += line + "\n"
+
         if multi_line_comment != "":
             file_dict['MetaData']['MetaComment'] = multi_line_comment
         dataset = file_dict['Datasets'][0]
@@ -570,7 +579,7 @@ class Writer():
         self.use_rii_aliases = use_rii_aliases
         meta_comment = self.file_dict['MetaData'].pop('MetaComment')
         #raise NotImplementedError("writing material files not yet implemented")
-        txt_types = {'.txt', '.csv'}
+        txt_types = {'.txt', '.csv', '.nk'}
         if self.extension in txt_types:
             self._write_text_file()
             if not meta_comment == "":
@@ -588,7 +597,7 @@ class Writer():
 
     def _write_text_file(self):
         """
-        writer for .txt and .csv files
+        writer for .txt, .csv and .nk files
         """
         header = ""
         for key in Writer.DATA_META_DATA_KEYS:

@@ -38,6 +38,16 @@ def test_from_txt_file():
     assert np.isclose(np.real(n), 4.574074754901961)
     assert np.isclose(np.imag(n), 0.4318627450980393)
 
+def test_from_nk_file():
+    relpath = os.path.join('Palik','Ag.nk')
+    filepath = os.path.join(root_path,relpath)
+    md = Material(file_path=filepath,
+                  spectrum_type='wavelength',
+                  unit='angstrom')
+    n = md.get_nk_data(spectrum)
+    assert np.isclose(np.real(n), 0.13)
+    assert np.isclose(np.imag(n), 2.917632850241546)
+
 
 def test_from_model():
     wp = 8.55 # eV

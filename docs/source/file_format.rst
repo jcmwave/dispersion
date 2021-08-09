@@ -2,7 +2,7 @@ File Format
 ===========
 
 Files in the database can be in two different formats. Either as a text file
-(.txt or .csv) or as a YAML file (.yml). An example of each format is
+(.txt, .csv or .nk) or as a YAML file (.yml). An example of each format is
 generated in the UserData module when installing the package.
 
 Text File
@@ -28,12 +28,13 @@ This is an example of the text file format,
   700.00000000	1.40000000	0.00000000
 
 - The optional metacomment comes at the beginning and can span multiple lines,
-  each line must begin with #. The metacomment cannot contain :.
+  each line must begin with # for .txt and .csv or ; for .nk files.
 - The optional metadata is written in key:value pairs, one per line, beginning
-  with a #. For a list of valid metadata categories, see MetaData_.
+  with a # (.txt, .csv) or ; (.nk). For a list of valid metadata categories,
+  see MetaData_.
 - Text files are restricted to datasets of tabulated data. For data defined
   via model parameters, use the YAML format.
-- .txt files expects tab separated columns, .csv files should use comma
+- .txt and .nk files expect tab separated columns, .csv files should use comma
   separated columns.
 
 YAML File
