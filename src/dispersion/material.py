@@ -912,7 +912,7 @@ class MaxwellGarnett(EffectiveMedium):
             raise ValueError('effective medium is approximately singular')
         eps_eff = eps_base*factor_up/factor_down
         self.spectrum.convert_to("wavelength", 'm', in_place=True)
-        table = np.concatenate([[self.spectrum.values],
+        table = np.vstack([[self.spectrum.values],
                                 [np.real(eps_eff)],
                                 [np.imag(eps_eff)]]).T
         self._process_table(table, "eps")
@@ -932,7 +932,7 @@ class Bruggeman(EffectiveMedium):
         eps_eff[indices2] = solution2[indices2]
         eps_eff[indices1] = solution1[indices1]
         self.spectrum.convert_to("wavelength", 'm', in_place=True)
-        table = np.concatenate([[self.spectrum.values],
+        table = np.vstack([[self.spectrum.values],
                                 [np.real(eps_eff)],
                                 [np.imag(eps_eff)]]).T
         self._process_table(table, "eps")
