@@ -3,10 +3,10 @@
 setup the disperion database file structure and configuration file
 """
 import os
-import tempfile
 import numpy as np
 from dispersion import Material, Writer, Interpolation, Catalogue
 from dispersion.config import default_config, write_config
+from dispersion.io import valid_file_name
 
 def get_root_dir(conf):
     """
@@ -87,24 +87,6 @@ def get_confirmation(question):
             print("input invalid")
     return confirmed_input
 
-def valid_file_name(filename):
-    """
-    test if filename is valid
-
-    create a file with the filename in a temporary directory and delete the
-    directory afterwards.
-    """
-    with tempfile.TemporaryDirectory() as temp_dir:
-        file_path = os.path.join(temp_dir, filename)
-        try:
-            open(file_path, 'r')
-            return True
-        except IOError:
-            try:
-                open(file_path, 'w')
-                return True
-            except IOError:
-                return False
 
 def install_modules(conf):
     """
@@ -126,10 +108,10 @@ def install_modules(conf):
             module_dir = os.path.join(conf['Path'], module)
             if not os.path.isdir(module_dir):
                 os.mkdir(module_dir)
-            install_funcs[module](module_dir, conf)
+            install_funcs[module](module_dir)
     return conf
 
-def install_userdata(module_dir, conf):
+def install_userdata(module_dir):
     make_example_txt(module_dir)
     make_example_yaml(module_dir)
 
@@ -179,18 +161,20 @@ def make_example_yaml(dir_path):
     write = Writer(filepath, mat)
     write.write_file()
 
-def install_rii(module_dir, conf):
+def install_rii(module_dir, ask_confirm=True):
     """
     download the refractive index info database from github
     """
     question = ("download the refractive index info database from github?" +
                 " (required python package <GitPython>)" +
                 " [y/n]> ")
-    install = get_confirmation(question)
+    if ask_confirm:
+        install = get_confirmation(question)
+    else:
+        install = True
     if install:
         from git import Repo
         git_url = "https://github.com/polyanskiy/refractiveindex.info-database.git"
-        #install_dir = os.path.join(conf['Path'], "RefractiveIndexInfo")
         Repo.clone_from(git_url, module_dir)
 
 def maybe_rebuild_catalogue(conf):
