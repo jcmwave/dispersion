@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="dispersion", # Replace with your own username
-    version="1.0.0",
+    version="1.0.1",
     author="Phillip Manley",
     author_email="manley@zib.de",
     description="support for libraries of optical dispersion (refractive index) data files",
