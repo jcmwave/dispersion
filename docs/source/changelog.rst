@@ -1,5 +1,15 @@
 Change Log
 ==========
+- 1.0.1
+
+  - fixed incorrect paths for RefractiveIndexInfo module.
+
+  - improved tests to include installation
+
+  - fixed error caused by effective media with length 1 spectra.
+
+  - register_alias now works properly with a slice of the database.
+
 - 1.0.0
 
   - first full release.
