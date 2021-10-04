@@ -216,10 +216,17 @@ class Catalogue(object):
 
     def register_alias(self, row_id, alias):
         """create an alias for a material to easily access it from the
-        catalogue"""
+        catalogue
+
+        Parameters:
+        rows_id: int or sliced DataFrame
+            the row index or row of a df in which to set the alias
+        alias: str
+            the alias to set
+        """
         index = None
-        if isinstance(row_id, pd.core.series.Series):
-            index = row_id.Index
+        if isinstance(row_id, pd.core.frame.DataFrame):
+            index = row_id.index
         elif isinstance(row_id, int):
             index = row_id
         if index is None:
@@ -273,7 +280,7 @@ class Catalogue(object):
         website"""
         self.rii_loader = {}
         self.rii_loader['db_path'] = db_path
-        data = read_yaml_file(os.path.join(db_path, "library.yml"))
+        data = read_yaml_file(os.path.join(db_path, "database", "library.yml"))
         dframe = pd.DataFrame(columns=Catalogue.META_DATA.keys())
         self.rii_loader['database_list'] = []
         self._iterate_shelves(data)
@@ -322,7 +329,7 @@ class Catalogue(object):
                 continue
             elif "PAGE" in page:
                 db_path = self.rii_loader['db_path']
-                rel_path = os.path.join('data', page['data'])
+                rel_path = os.path.join('database','data', page['data'])
                 full_file = os.path.join(db_path, rel_path)
                 try:
                     mat = Material(file_path=full_file,
