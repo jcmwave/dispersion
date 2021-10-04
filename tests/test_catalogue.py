@@ -5,7 +5,7 @@ import os
 from copy import copy
 from dispersion import Catalogue
 from dispersion import Spectrum
-from dispersion.config import get_config, default_config
+from dispersion.config import default_config
 from dispersion.scripts.setup_dispersion import (install_userdata, install_rii)
 
 
