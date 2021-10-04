@@ -3,7 +3,7 @@
 import os
 from warnings import warn
 from dispersion.io import (read_yaml_file, read_yaml_string,
-                                          write_yaml_file)
+                           write_yaml_file, valid_file_name)
 if os.name == 'nt':
     PLATFORM = "Windows"
 elif os.name == 'posix':
@@ -25,6 +25,10 @@ def validate_config(config):
     if not os.path.isdir(config['Path']):
         raise IOError("directory path for database file system is invalid:" +
                       " <{}>".format(config['Path']))
+    check_type(config['File'],str)
+    if not valid_file_name(config['File']):
+        raise IOError("file path for database file is invalid:" +
+                      " <{}>".format(config['File']))
     check_type(config['Interactive'],bool)
     check_type(config['WarnMissingPackages'],bool)
     assert "Modules" in config
@@ -95,7 +99,9 @@ def _get_config_dir():
     file_path = os.path.join(pkg_dir, 'config.yaml')
     if os.path.isfile(file_path):
         return pkg_dir
-    return user_dir
+    raise ValueError("could not locate configuration or package directory, "+
+                     "unable to load configuration file.")
+
 
 def write_config(config):
     """write the configuration data to file.
