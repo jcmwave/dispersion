@@ -19,6 +19,10 @@ write_yaml_file
     write dict to a yaml format file
 print_yaml_string
     print a dict in yaml format to stdout
+prepend_text_to_file
+    add text to start of a file
+valid_file_name
+    check if file name is valid for this operating system
 
 Classes
 -------
@@ -31,6 +35,7 @@ import os
 import sys
 import codecs
 import re
+import tempfile
 from collections import OrderedDict
 import numpy as np
 USE_RUAMEL = True
@@ -225,6 +230,25 @@ def prepend_text_to_file(file_path, text, extra_line=False):
             text += "\n"
         fpt.write(text)
         fpt.write(current_text)
+
+def valid_file_name(filename):
+    """
+    test if filename is valid
+
+    create a file with the filename in a temporary directory and delete the
+    directory afterwards.
+    """
+    with tempfile.TemporaryDirectory() as temp_dir:
+        file_path = os.path.join(temp_dir, filename)
+        try:
+            open(file_path, 'r')
+            return True
+        except IOError:
+            try:
+                open(file_path, 'w')
+                return True
+            except IOError:
+                return False
 
 
 class Reader():
