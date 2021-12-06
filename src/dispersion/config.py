@@ -103,7 +103,7 @@ def _get_config_dir():
                      "unable to load configuration file.")
 
 
-def write_config(config):
+def write_config(config, dir_path=None):
     """write the configuration data to file.
 
     Parameters
@@ -115,7 +115,8 @@ def write_config(config):
     --------
     No check is made if the config is valid or complete.
     """
-    dir_path = _get_config_dir()
+    if dir_path is None:
+        dir_path = _get_config_dir()
     file_path = os.path.join(dir_path, 'config.yaml')
     write_yaml_file(file_path, config)
 

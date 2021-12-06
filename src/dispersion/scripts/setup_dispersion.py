@@ -5,7 +5,7 @@ setup the disperion database file structure and configuration file
 import os
 import numpy as np
 from dispersion import Material, Writer, Interpolation, Catalogue
-from dispersion.config import default_config, write_config
+from dispersion.config import default_config, write_config, _get_user_config_dir
 from dispersion.io import valid_file_name
 
 def get_root_dir(conf):
@@ -200,7 +200,8 @@ def main():
 
     #print("Filename will be set to {}".format(name))
     conf = install_modules(conf)
-    write_config(conf)
+    user_dir = _get_user_config_dir()
+    write_config(conf, dir_path=user_dir)
 
     maybe_rebuild_catalogue(conf)
 

@@ -6,7 +6,7 @@ from dispersion.spectral_data import *
 from dispersion.io import Writer, Reader
 from dispersion.material import Material
 from dispersion.catalogue import Catalogue, rebuild_catalogue
-from dispersion.config import get_config
+from dispersion.config import get_config, default_config
 
 __version__ = "1.0.1"
 __all__ = ["Spectrum", "Material", "Catalogue", "get_config",
@@ -16,7 +16,10 @@ __all__ = ["Spectrum", "Material", "Catalogue", "get_config",
            "Herzberger", "Retro", "Exotic", "Drude",
            "DrudeLorentz", "rebuild_catalogue", "Writer", "Reader"]
 
-config = get_config()
+try:
+    config = get_config()
+except ValueError:
+    config = default_config()
 
 try:
     from ruamel.yaml import YAML
