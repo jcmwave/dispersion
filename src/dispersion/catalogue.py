@@ -136,8 +136,8 @@ class Catalogue(object):
         df_new = pd.DataFrame(columns=Catalogue.META_DATA.keys())
         for module, valid in config_modules.items():
             if valid:
-                print("Building {}".format(module))
                 if module in rebuild or rebuild == 'All':
+                    print("Building {}".format(module))
                     db_path = module
                     dir_path = os.path.join(self.base_path, db_path)
                     read_function = all_modules[module]
@@ -148,7 +148,7 @@ class Catalogue(object):
                     else:
                         df_new = df_new.append(dframe, ignore_index=True)
                 else:
-                    dframe = df[df.Database == module]
+                    dframe = df[df.Module == module]
                     if PANDAS_MINOR_VERSION > 22:
                         df_new = df_new.append(dframe, sort=False,
                                                ignore_index=True)
