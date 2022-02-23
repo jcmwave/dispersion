@@ -1,5 +1,9 @@
 Change Log
 ==========
+- 1.0.3
+
+  - fixed bug where rebuilding single catalogue modules failed.
+
 - 1.0.2
 
   - fixed bug where installation script failed if no configuration file was present.
