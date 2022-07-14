@@ -31,8 +31,14 @@ def test_from_wavelength():
     spectrum2 = Spectrum([0.5, 0.8],
                          spectrum_type = 'wavelength',
                          unit='micrometre')
-    assert np.isclose(spectrum1.standard_rep[0], 5.e-7)
-    assert np.isclose(spectrum1.standard_rep[1], 8.e-7)
+    assert np.isclose(spectrum2.standard_rep[0], 5.e-7)
+    assert np.isclose(spectrum2.standard_rep[1], 8.e-7)
+
+    spectrum3 = Spectrum([5., 8.],
+                         spectrum_type = 'wavelength',
+                         unit='centimetre')
+    assert np.isclose(spectrum3.standard_rep[0], 5.e-2)
+    assert np.isclose(spectrum3.standard_rep[1], 8.e-2)
 
 
 def test_from_energy():

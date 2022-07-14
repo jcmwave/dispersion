@@ -89,6 +89,8 @@ def wavelength_to_standard(unit, values):
     """converts wavelength values to standardised representation"""
     if unit == 'nm':
         converted_values = values*1e-9
+    elif unit == 'cm':
+       converted_values = values*1e-2
     elif unit == 'um':
         converted_values = values*1e-6
     elif unit =='a':
@@ -101,7 +103,9 @@ def to_wavelength(unit, values):
     """converts values from standard to wavelength representation"""
     if unit == 'm':
         converted_values = values
-    if unit == 'nm':
+    elif unit == 'cm':
+        converted_values = np.round(values*1e2, decimals=5)
+    elif unit == 'nm':
         converted_values = np.round(values*1e9, decimals=12)
     elif unit == 'um':
         converted_values = np.round(values*1e6, decimals=9)
@@ -147,13 +151,14 @@ class Spectrum(object):
     when defining spectral quantities
     '''
 
-    SPECTRUM_TYPES = {'wavelength': {'m', 'um', 'nm', 'a'},
+    SPECTRUM_TYPES = {'wavelength': {'m', 'cm', 'um', 'nm', 'a'},
                       'frequency': {'hz'},
                       'energy': {'ev'},
                       'angularfrequency': {'1/s'},
                       'wavenumber': {'1/cm'}}
 
     UNIT_TYPES = {'m': {'meter', 'metre', 'm'},
+                  'cm': {'centimeter', 'centimetre', 'cm'},
                   'um': {'micrometer', 'micrometre', 'um'},
                   'nm': {'nanometer', 'nanometre', 'nm'},
                   'hz': {'hertz', 'hz'},
