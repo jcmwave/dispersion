@@ -1,5 +1,11 @@
 Change Log
 ==========
+- 1.0.4
+
+  - added centimeter as wavelength unit
+  - added support for loading tabulated data defined through real part of
+    refractive index plus absorption coefficient (in inverse centimeters)
+
 - 1.0.3
 
   - fixed bug where rebuilding single catalogue modules failed.
