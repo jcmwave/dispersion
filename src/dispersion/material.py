@@ -67,6 +67,9 @@ class Material():
         table of real part of refractive index to interpolate
     tabulated_nk: Nx3 array
         table of real and imaginary refractive index values to interpolate
+    tabulated_n_alpha: Nx3 array
+        table of real and refractive index and absorption coefficient values
+        to interpolate
     tabulated_eps: Nx3 array
         table of real and imaginary permittivity values to interpolate
     model_kw: dict
@@ -87,7 +90,7 @@ class Material():
     Warnings
     --------
     the parameters file_path, fixed_n, fixed_nk, fixed_eps_r, fixed_eps,
-    tabulated_n, tabulated_nk, tabulated_eps and model_kw are mututally
+    tabulated_n, tabulated_nk, tabulted_n_alpha, tabulated_eps and model_kw are mututally
     exclusive.
 
     '''
@@ -115,7 +118,6 @@ class Material():
         self.options = {'interp_oder':parsed_args["interp_order"]}
         self.defaults = {'unit':parsed_args["unit"],
                          'spectrum_type':parsed_args["spectrum_type"]}
-
         #process input arguments
         if file_path is not None:
             reader = Reader(file_path)
@@ -125,6 +127,8 @@ class Material():
             self._process_model_dict(parsed_args['model_kw'])
         elif parsed_args['tabulated_nk'] is not None:
             self._process_table(parsed_args['tabulated_nk'], 'nk')
+        elif parsed_args['tabulated_n_alpha'] is not None:
+            self._process_table(parsed_args['tabulated_n_alpha'], 'n_alpha')
         elif parsed_args['tabulated_n'] is not None:
             self._process_table(parsed_args['tabulated_n'], 'n')
         elif parsed_args['tabulated_eps'] is not None:
@@ -140,8 +144,8 @@ class Material():
         """
         mutually_exclusive = {"file_path", "fixed_n", "fixed_nk",
                               "fixed_eps_r", "fixed_eps",
-                              "tabulated_nk", "tabulated_n",
-                              "tabulated_eps",
+                              "tabulated_nk", "tabulated_n_alpha",
+                              "tabulated_n", "tabulated_eps",
                               "model_kw"}
         inputs = {}
         n_mutually_exclusive = 0
@@ -187,11 +191,14 @@ class Material():
         dict_types = {dict}
         self._check_type(inputs, dict_args, dict_types)
 
-        array_args = {'tabulated_nk', 'tabulated_n', 'tabulated_eps'}
+        array_args = {'tabulated_nk', 'tabulated_n', 'tabulated_eps',
+                      'tabulated_n_alpha'}
         array_types = {np.ndarray}
         self._check_type(inputs, array_args, array_types)
         if inputs['tabulated_nk'] is not None:
             _check_table_shape(inputs['tabulated_nk'], 3, 'nk')
+        if inputs['tabulated_n_alpha'] is not None:
+            _check_table_shape(inputs['tabulated_nk'], 3, 'n_alpha')
         if inputs['tabulated_n'] is not None:
             _check_table_shape(inputs['tabulated_n'], 2, 'n')
         if inputs['tabulated_eps'] is not None:
@@ -430,7 +437,6 @@ class Material():
         """
         if meta_data is None:
             meta_data = {}
-
         if ('SpectrumType' in meta_data and \
             meta_data['SpectrumType'] and \
             meta_data['SpectrumType'] is not None):
@@ -439,11 +445,21 @@ class Material():
             meta_data['Unit'] and \
             meta_data['Unit'] is not None):
             self.defaults['unit'] = meta_data['Unit']
-
         if identifier == 'nk':
             self.data['name'] = 'nk'
             self.data['real'] = self._spec_data_from_table(table[:, [0, 1]])
             self.data['imag'] = self._spec_data_from_table(table[:, [0, 2]])
+        elif identifier == 'n_alpha':
+            self.data['name'] = 'nk'
+            self.data['real'] = self._spec_data_from_table(table[:, [0, 1]])
+            default_spectrum = Spectrum(table[:, 0],
+                                        self.defaults['spectrum_type'],
+                                        self.defaults['unit'])
+            wvls = default_spectrum.convert_to('wavelength','cm')
+            alpha = table[:, 2]
+            k = alpha*wvls/(np.pi*4.)
+            new_table = np.vstack([table[:, 0], k]).T
+            self.data['imag'] = self._spec_data_from_table(new_table)
         elif identifier == 'n':
             self.data['name'] = 'nk'
             self.data['real'] = self._spec_data_from_table(table)
@@ -567,11 +583,10 @@ class Material():
         spectrum = Spectrum(spectrum_values,
                             spectrum_type=spectrum_type,
                             unit=unit)
-
-        if not (self.data['name'] == 'nk' or self.data['name'] == 'eps'):
+        valid_data_names = ['nk', 'eps']
+        if not (self.data['name'] in valid_data_names):
             raise ValueError("data type {}".format(self.data['name']) +
                              "cannot be converted to refractive index")
-
         if self.data['complex'] is None:
             real = self.data['real'].evaluate(spectrum)
             imag = 1j*self.data['imag'].evaluate(spectrum)
@@ -903,7 +918,6 @@ class MaxwellGarnett(EffectiveMedium):
     def create_effective_data(self):
         #def get_maxwell_garnet(eps_base, eps_incl, vol_incl):
         small_number_cutoff = 1e-6
-        print(self.frac)
         eps_base = self.mat1.get_permittivity(self.spectrum)
         eps_incl = self.mat2.get_permittivity(self.spectrum)
         factor_up = 2*(1-self.frac)*eps_base+(1+2*self.frac)*eps_incl
