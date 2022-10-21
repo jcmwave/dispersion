@@ -725,6 +725,7 @@ class Material():
         # pylint: disable=protected-access
         # this is the only way to access the color cycler
         axes = plot_data['axes']
+        plt.sca(axes)
         spectrum = plot_data['spectrum']
         if spectrum.values.size == 1:
             color = next(axes._get_lines.prop_cycler)['color']
