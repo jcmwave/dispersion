@@ -913,6 +913,18 @@ class EffectiveMedium(Material):
         raise NotImplementedError("create_effective_data must be defined" +
                                   " in a subclass")
 
+class Simple(EffectiveMedium):
+
+    def create_effective_data(self):
+        eps_base = self.mat1.get_permittivity(self.spectrum)
+        eps_incl = self.mat2.get_permittivity(self.spectrum)
+        eps_eff = eps_base*(1-self.frac) + eps_incl*(self.frac)
+        self.spectrum.convert_to("wavelength", 'm', in_place=True)
+        table = np.vstack([[self.spectrum.values],
+                                [np.real(eps_eff)],
+                                [np.imag(eps_eff)]]).T
+        self._process_table(table, "eps")
+
 class MaxwellGarnett(EffectiveMedium):
 
     def create_effective_data(self):
