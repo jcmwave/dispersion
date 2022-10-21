@@ -4,6 +4,7 @@ setup the disperion database file structure and configuration file
 """
 import os
 import numpy as np
+import warnings
 from dispersion import Material, Writer, Interpolation, Catalogue
 from dispersion.config import default_config, write_config, _get_user_config_dir
 from dispersion.io import valid_file_name
@@ -108,12 +109,15 @@ def install_modules(conf):
             module_dir = os.path.join(conf['Path'], module)
             if not os.path.isdir(module_dir):
                 os.mkdir(module_dir)
-            install_funcs[module](module_dir)
+            success = install_funcs[module](module_dir)
+            if success is False:
+                conf['Modules'][module] = success
     return conf
 
 def install_userdata(module_dir):
     make_example_txt(module_dir)
     make_example_yaml(module_dir)
+    return True
 
 def make_example_txt(dir_path):
     test_data = np.array([[400., 1.7, 0.1],
@@ -178,13 +182,23 @@ def install_rii(module_dir, ask_confirm=True):
         Repo.clone_from(git_url, module_dir)
     else:
         if not os.path.isdir(module_dir):
-            os.mkdir(module_dir)
+            warnings.warn("directory for refractive index info module"+
+                          " not present: {}".format(module_dir) +
+                          " refractive index info module will be disabled")
+            return False
         database_dir = os.path.join(module_dir, "database")
         if not os.path.isdir(database_dir):
-            os.mkdir(database_dir)
+            warnings.warn("directory for refractive index info module"+
+                          " not present: {}".format(database_dir) +
+                          " refractive index info module will be disabled")
+            return False
         database_file = os.path.join(database_dir, "library.yml")
         if not os.path.isfile(database_file):
-            open(database_file, 'a').close()
+            warnings.warn("library file for refractive index info module"+
+                          " not present: {}".format(database_file) +
+                          " refractive index info module will be disabled")
+            return False
+    return True
 
 def maybe_rebuild_catalogue(conf):
     question = "rebuild catalogue? [y/n]> "
@@ -195,7 +209,7 @@ def maybe_rebuild_catalogue(conf):
 
 def main():
     conf = default_config()
-    print("This script will provide a default configuration for the \n"+
+    print("This script will provide a default configuration for the "+
           "dispersion package")
     confirmed_valid_path = False
     while not confirmed_valid_path:
