@@ -176,6 +176,15 @@ def install_rii(module_dir, ask_confirm=True):
         from git import Repo
         git_url = "https://github.com/polyanskiy/refractiveindex.info-database.git"
         Repo.clone_from(git_url, module_dir)
+    else:
+        if not os.path.isdir(module_dir):
+            os.mkdir(module_dir)
+        database_dir = os.path.join(module_dir, "database")
+        if not os.path.isdir(database_dir):
+            os.mkdir(database_dir)
+        database_file = os.path.join(database_dir, "library.yml")
+        if not os.path.isfile(database_file):
+            open(database_file, 'a').close()
 
 def maybe_rebuild_catalogue(conf):
     question = "rebuild catalogue? [y/n]> "
