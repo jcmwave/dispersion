@@ -8,7 +8,7 @@ from dispersion.material import Material
 from dispersion.catalogue import Catalogue, rebuild_catalogue
 from dispersion.config import get_config, default_config
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __all__ = ["Spectrum", "Material", "Catalogue", "get_config",
            "Constant", "Interpolation", "Extrapolation",
            "Sellmeier", "Sellmeier2", "Polynomial",

@@ -1,5 +1,11 @@
 Change Log
 ==========
+- 1.0.5
+
+  - added support for simple effective medium
+  - fixed a bug causing install script to crash if RII database was selected but
+    not downloaded.
+
 - 1.0.4
 
   - added centimeter as wavelength unit
