@@ -280,7 +280,10 @@ class Catalogue(object):
         website"""
         self.rii_loader = {}
         self.rii_loader['db_path'] = db_path
-        data = read_yaml_file(os.path.join(db_path, "database", "library.yml"))
+        try:
+            data = read_yaml_file(os.path.join(db_path, "database", "catalog-nk.yml"))
+        except FileNotFoundError:
+            data = read_yaml_file(os.path.join(db_path, "database", "library.yml"))
         dframe = pd.DataFrame(columns=Catalogue.META_DATA.keys())
         self.rii_loader['database_list'] = []
         self._iterate_shelves(data)
@@ -329,7 +332,15 @@ class Catalogue(object):
                 continue
             elif "PAGE" in page:
                 db_path = self.rii_loader['db_path']
-                rel_path = os.path.join('database','data', page['data'])
+                if os.path.isdir(os.path.join(db_path, 'database','data')):
+                    file_prefix = os.path.join('database','data')
+                elif os.path.isdir(os.path.join(db_path, 'database','data-nk')):
+                    file_prefix = os.path.join('database','data-nk')
+                else:
+                    file_prefix = os.path.join('database','data-nk')
+                    raise ValueError("required subfolder {} of ".format(file_prefix) +
+                                     "database file structure does not exist")
+                rel_path = os.path.join(file_prefix, page['data'])
                 full_file = os.path.join(db_path, rel_path)
                 try:
                     mat = Material(file_path=full_file,
