@@ -1,5 +1,9 @@
 Change Log
 ==========
+- 1.0.6
+
+  - Fixed an issue with catalogue generation due to refractive index info updating their file structure.
+  
 - 1.0.5
 
   - added support for simple effective medium
