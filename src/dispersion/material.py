@@ -138,6 +138,25 @@ class Material():
 
         self._complete_partial_data()
 
+    def __eq__(self, other):
+        """
+        equality theck is very superficial, it just checks if the meta data
+        and data name are the same
+        """
+        if not isinstance(other, Material):
+            return False
+
+        for meta_data_key, meta_data_value in self.meta_data.items():
+            meta_data_value_other = other.meta_data[meta_data_key]
+            if not meta_data_value == meta_data_value_other:
+                return False
+
+        if not self.data['name'] == other.data['name']:
+            return False
+        return True
+
+
+
     def _parse_args(self, args):
         """
         validated the dictionary of class inputs
